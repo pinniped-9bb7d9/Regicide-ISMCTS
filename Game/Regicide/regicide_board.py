@@ -100,7 +100,8 @@ class RegicideBoard(Board):
                     self.discard.addCards(deepcopy(player.played))
                 player.played = []
             if perfect_hit:
-                print("Perfect Hit!")
+                if not ai:
+                    print("Perfect Hit!")
                 self.tavern.addBoss(self.castle.boss)
             else:
                 self.discard.addCards([deepcopy(self.castle.boss)])
@@ -196,6 +197,9 @@ class RegicideBoard(Board):
         return legal_plays
 
     def winner(self, last_action=None):
+        # NOTE - Boss Reward Check Parameter
+        boss_condition = True
+
         if not last_action:
             last_action = self.actions[-1]
 
@@ -208,6 +212,10 @@ class RegicideBoard(Board):
         for player in self.players:
             if len(player.hand) == 0 and self.castle.boss.attack != 0:
                 result = Result.LOSS
+
+        if boss_condition:
+            if last_action.boss_defeated:
+                result = Result.BOSS_DEFEATED
 
         if last_action.boss_defeated and len(self.castle.cards) == 0:
             result = Result.WIN
@@ -320,6 +328,7 @@ class Result(Enum):
     ALIVE = 0
     WIN = 1
     LOSS = 2
+    BOSS_DEFEATED = 3
 
 # utitily function
 def sumOfRanks(cards):

@@ -6,10 +6,11 @@ from Game.Regicide.regicide_board import Result
 from Game.Regicide.regicide_action import RegicideAction
 from Game.Regicide.regicide_board import RegicideBoard
 from ISMCTS.Game.regicide_node import RegicideNode
-
+from ISMCTS.Base.timer import Timer
 
 def main():
     max_runs = 100
+    max_time = 1
     main_game_state = RegicideBoard()
     main_game_state.start()
 
@@ -39,14 +40,15 @@ def main():
 
             state = main_game_state.winner()
 
-            if state != Result.ALIVE:
+            if state != Result.ALIVE and state != Result.BOSS_DEFEATED:
                 game_over = True
 
         else: # AI's Turn
-            run_count = 0
 
             print("AI is thinking...")
             print(main_game_state.players[main_game_state.currentPlayer()].name + "'s Turn:")
+            print("Boss:", main_game_state.castle.boss, "| Health:", main_game_state.castle.boss.health, "| Attack:",
+                  main_game_state.castle.boss.attack)
             legal_plays = main_game_state.legalPlays(main_game_state.players[next_turn].hand)
             print(legal_plays)
             input()
@@ -54,7 +56,12 @@ def main():
             root_node.setGameState(deepcopy(main_game_state))
             root_node.setActivePlayer()
 
-            while run_count < max_runs:
+            run_count = 0
+            current_time = 0
+            timer = Timer()
+            timer.start()
+
+            while run_count < max_runs and current_time < max_time:
                 # TODO - Fix the recursion within the select function in order to return correctly selected node
                 selected_node = root_node.Select()
 
@@ -66,11 +73,11 @@ def main():
                     expanded_node.Simulate()
 
                 run_count += 1
-                print("Current run count:", run_count)
+                current_time = timer.check()
+                # print("Current run count:", run_count)
 
             highest_child = root_node.findHighestRankingChild()
             ai_action = highest_child.getGameAction()
-            print("")
             print("AI's Final Move:", ai_action)
             print("")
             main_game_state = main_game_state.nextState(ai_action, True)
@@ -79,7 +86,7 @@ def main():
 
             state = main_game_state.winner()
 
-            if state != Result.ALIVE:
+            if state != Result.ALIVE and state != Result.BOSS_DEFEATED:
                 game_over = True
 
     winner = main_game_state.winner()

@@ -1,6 +1,8 @@
 # External Imports
 import random
 from copy import deepcopy
+from math import sqrt
+from math import log
 
 from Game.Regicide.regicide_action import RegicideAction
 # Internal Imports
@@ -46,7 +48,7 @@ class RegicideNode(Node):
         if len(self.available_moves) == 0:
             self.end_state = True
 
-        if self.game_state.winner() != Result.ALIVE:
+        if self.game_state.winner() != Result.ALIVE and self.game_state.winner() != Result.BOSS_DEFEATED:
             self.end_state = True
 
     # getters
@@ -61,13 +63,26 @@ class RegicideNode(Node):
         return self.ranking
 
     # MCTS functions
-    def Select(self):
+    # REFERENCE - https://github.com/melvinzhang/ismcts/blob/master/ISMCTS.py
+    def Select(self, exploration=0.7):
+        random_select = False
+
+        # Prioritise fully expanding the root node...
         if len(self.branches) == 0 or len(self.available_moves) > 0:
             return self
         else:
-            # TODO - add sophisticated selection heuristics
-            random_branch = random.randint(0, len(self.branches) - 1)
-            return self.branches[random_branch].Select()
+            if random_select:
+                random_branch = random.randint(0, len(self.branches) - 1)
+                return self.branches[random_branch].Select()
+
+            # NOTE - USB1 Selection
+            # NOTE - + 1 to child visits to avoid divide by zero
+            selection = max(self.branches,
+                            key=lambda child: float(child.ranking) / float(child.visits + 1)
+                            + exploration * sqrt(log(child.parent.visits) / float(child.visits + 1)),
+                            )
+
+            return selection.Select()
 
     def Expand(self):
         #self.generate_possible_moves(self.getGameState().players[self.active_player].hand)
@@ -77,8 +92,12 @@ class RegicideNode(Node):
             return None
         else:
 
-            random_move = random.randint(0, len(self.available_moves) - 1)
-            move = self.available_moves[random_move]
+            # TODO - add sophisticated expand heuristics
+            combo_check = True
+            suit_check = True
+            duplicate_check = True
+
+            move = self.determineExpansionMove(combo_check, suit_check, duplicate_check)
 
             self.available_moves.remove(move)
 
@@ -86,6 +105,8 @@ class RegicideNode(Node):
             child_node.branches = []
             child_node.setParent(self)
             child_node.setDepth(self.depth + 1)
+
+
 
             new_game_state = deepcopy(self.game_state)
 
@@ -115,6 +136,7 @@ class RegicideNode(Node):
 
         winner = self.getGameState().winner()
 
+        boss_bonus = 0
         self.end_state = False
 
         if winner != Result.ALIVE:
@@ -146,8 +168,11 @@ class RegicideNode(Node):
 
             winner = random_game_state.winner()
 
-            if winner != Result.ALIVE:
-                self.calculateResult(winner)
+            if winner == Result.BOSS_DEFEATED:
+                boss_bonus += 1
+
+            if winner == Result.LOSS or winner == Result.WIN: # i.e not ALIVE or BOSS_DEFEATED
+                self.calculateResult(winner, boss_bonus)
                 self.end_state = False
                 self.setGameState(game_state_copy, game_action_copy)
                 return
@@ -175,11 +200,11 @@ class RegicideNode(Node):
 
         return self.branches[max_index]
 
-    def calculateResult(self, winner):
+    def calculateResult(self, winner, boss_bonus = 0):
         if winner == Result.WIN:
-            self.Backpropagate(1)
+            self.Backpropagate(1 + boss_bonus)
         elif winner == Result.LOSS:
-            self.Backpropagate(-1)
+            self.Backpropagate(-1 + boss_bonus)
         return
 
     def resetNode(self):
@@ -188,3 +213,71 @@ class RegicideNode(Node):
         self.visits = 0
         self.depth = 0
         self.available_moves = []
+
+    # heuristic functions
+    def determineExpansionMove(self, combo_check = False, suit_check = False, duplicate_check = False):
+        # NOTE - move is default set to first move in list
+        move = self.available_moves[0]
+
+        # turn on combo check if duplicate check is on
+        if duplicate_check:
+            combo_check = True
+
+        # create list of combos
+        combos = []
+        if combo_check:
+            if len(self.available_moves) > 1:
+                for move in self.available_moves:
+                    if move:
+                        if len(move) > 1:
+                            combos.append(move)
+
+        # create list of moves with suit that isn't the same as the current boss
+        other_suit = []
+        if suit_check:
+            if len(self.available_moves) > 1:
+                for move in self.available_moves:
+                    if move:
+                        other_suit_check = True
+                        for card in move:
+                            if card.suit == self.game_state.castle.boss.suit:
+                                other_suit_check = False
+                        if other_suit_check:
+                            other_suit.append(move)
+
+        # create list of combos that don't have duplicate suit types
+        # NOTE - edits already made combo list
+        duplicates = []
+        if duplicate_check:
+            for move in combos:
+                duplicate = False
+                for card in move:
+                    move_copy = deepcopy(move)
+                    move_copy.remove(card)
+                    for other_card in move_copy:
+                        if card.suit == other_card.suit and card.suit != other_card.suit:
+                            duplicate = True
+                if duplicate:
+                    duplicates.append(move)
+
+            combos = [move for move in combos if move not in duplicates]
+
+        # combine lists if multiple checks are on
+        if suit_check and combo_check:
+            moves = [move for move in self.available_moves if move in combos and move in other_suit]
+        elif combo_check:
+            moves = combos
+        elif suit_check:
+            moves = other_suit
+        else:
+            moves = self.available_moves
+
+        # prioritise combos first
+        if len(moves) > 0:
+            random_move = random.randint(0, len(moves) - 1)
+            move = combos[random_move]
+        else:
+            random_move = random.randint(0, len(self.available_moves) - 1)
+            move = self.available_moves[random_move]
+
+        return move

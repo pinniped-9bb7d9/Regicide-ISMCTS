@@ -32,7 +32,8 @@ class RegicidePlayer(Player):
             print(self.name + " is taking", damage, "damage!")
 
         if damage >= self.calculateHealth():
-            print(self.name, "died!")
+            if not ai:
+                print(self.name, "died!")
             return False
 
         defence = 0
@@ -70,7 +71,7 @@ class RegicidePlayer(Player):
                 defence += card.rank
 
             if len(self.hand) == 0:
-                print(self.name, "died!")
+                # print(self.name, "died!")
                 return False
 
             return discarded
