@@ -1,0 +1,8 @@
+2024-12-31 16:48:07,160 - I log states! :D
+2024-12-31 16:48:07,160 - BEGIN STATE LOG:
+2024-12-31 16:48:07,160 - Noah's Hand: [AH, 2S, 9C, 9D, 8S, 8H, TD]
+2024-12-31 16:48:07,160 - Eve's Hand: [5C, 7H, TC, 2H, TH, 4H, 2C]
+2024-12-31 16:48:07,160 - Tavern: <Cards.Regicide.tavern.Tavern object at 0x1334fb8d0>
+2024-12-31 16:48:07,160 - Castle: <Cards.Regicide.castle.Castle object at 0x1334fb850>
+2024-12-31 16:48:07,160 - Discard: <Cards.Regicide.discard.Discard object at 0x1334fb810>
+2024-12-31 16:48:07,160 - Active Player: 0

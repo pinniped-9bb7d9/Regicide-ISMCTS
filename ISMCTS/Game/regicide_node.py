@@ -77,12 +77,16 @@ class RegicideNode(Node):
 
             # NOTE - USB1 Selection
             # NOTE - + 1 to child visits to avoid divide by zero
-            selection = max(self.branches,
-                            key=lambda child: float(child.ranking) / float(child.visits + 1)
-                            + exploration * sqrt(log(child.parent.visits) / float(child.visits + 1)),
-                            )
+            try:
+                selection = max(self.branches,
+                                key=lambda child: float(child.ranking) / float(child.visits + 1)
+                                + exploration * sqrt(log(child.parent.visits) / float(child.visits + 1)),
+                                )
 
-            return selection.Select()
+                return selection.Select()
+            except ValueError:
+                random_branch = random.randint(0, len(self.branches) - 1)
+                return self.branches[random_branch].Select()
 
     def Expand(self):
         #self.generate_possible_moves(self.getGameState().players[self.active_player].hand)

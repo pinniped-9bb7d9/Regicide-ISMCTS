@@ -24,6 +24,9 @@ class RegicideBoard(Board):
         self.hand_size = 0
         self.consecutive_yields = 0
 
+    # def __repr__(self):
+    #     return str(len(self.players))
+
     def start(self):
         # TODO - input validation
         num_players = int(input("How many players would you like to play? (2-4): "))

@@ -1,5 +1,10 @@
+# REFERENCE - https://docs.python.org/3/howto/logging.html
+# REFERENCE - https://stackoverflow.com/questions/8898997/python-clear-a-log-file
+
 # External Imports
 from copy import deepcopy
+import logging
+import datetime
 
 # Internal Imports
 from Game.Regicide.regicide_board import Result
@@ -9,10 +14,17 @@ from ISMCTS.Game.regicide_node import RegicideNode
 from ISMCTS.Base.timer import Timer
 
 def main():
-    max_runs = 100
-    max_time = 1
+    max_runs = 1000000
+    max_time = 10000000000
     main_game_state = RegicideBoard()
     main_game_state.start()
+
+    # NOTE - turning off state and action log whilst taking timing results
+    #action_logger = initialiseActionLogger()
+    #state_logger = initialiseStateLogger()
+    #logState(state_logger, main_game_state)
+
+    time_logger = initialiseTimeLogger()
 
     # TODO - Learn how to properly log in Python
     #main_game_state.print_board()
@@ -37,6 +49,8 @@ def main():
             play_index = int(input("Which hand would you like to play (Enter index): "))
             print("")
             main_game_state = main_game_state.nextState(legal_plays[play_index])
+            # NOTE - turning off state and action log whilst taking timing results
+            #logState(state_logger, main_game_state)
 
             state = main_game_state.winner()
 
@@ -76,11 +90,19 @@ def main():
                 current_time = timer.check()
                 # print("Current run count:", run_count)
 
+            total_time = timer.check()
+            timer.stop()
+
+            # NOTE - log total elapsed time to go run_count
+            logTime(time_logger, max_runs, total_time)
+
             highest_child = root_node.findHighestRankingChild()
             ai_action = highest_child.getGameAction()
             print("AI's Final Move:", ai_action)
             print("")
             main_game_state = main_game_state.nextState(ai_action, True)
+            # NOTE - turning off state and action log whilst taking timing results
+            #logState(state_logger, main_game_state)
 
             root_node.resetNode()
 
@@ -102,5 +124,82 @@ def main():
         print("YOU'RE ALIVE!")
         game_over = True;
 
+    # NOTE - turning off state and action log whilst taking timing results
+    #logActions(action_logger, main_game_state.actions)
+
+# logging functions
+
+import logging
+import datetime
+
+def initialiseActionLogger():
+    now = datetime.datetime.now()
+    now_str = now.strftime("%d%m%y%H%M%S")
+    filename = "Logs/Actions/" + now_str + ".log"
+
+    # Create a logger specifically for actions
+    logger = logging.getLogger("Actions")
+    file_handler = logging.FileHandler(filename, mode="w", encoding='utf-8')
+    formatter = logging.Formatter('%(asctime)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    logger.setLevel(logging.DEBUG)
+
+    logger.info("I log actions! :D")
+
+    return logger
+
+def initialiseStateLogger():
+    now = datetime.datetime.now()
+    now_str = now.strftime("%d%m%y%H%M%S")
+    filename = "Logs/States/" + now_str + ".log"
+
+    # Create a logger specifically for states
+    logger = logging.getLogger("States")
+    file_handler = logging.FileHandler(filename, mode="w", encoding='utf-8')
+    formatter = logging.Formatter('%(asctime)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    logger.setLevel(logging.DEBUG)
+
+    logger.info("I log states! :D")
+
+    return logger
+
+def initialiseTimeLogger():
+    now = datetime.datetime.now()
+    now_str = now.strftime("%d%m%y%H%M%S")
+    filename = "Logs/Time/" + now_str + ".log"
+
+    # Create a logger specifically for states
+    logger = logging.getLogger("Time")
+    file_handler = logging.FileHandler(filename, mode="w", encoding='utf-8')
+    formatter = logging.Formatter('%(asctime)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    logger.setLevel(logging.DEBUG)
+
+    logger.info("I log time taken for AI to run max_count! :D")
+
+    return logger
+
+def logActions(logger, actions):
+    for action in actions:
+        logger.info("Player: {} | Cards Played: {} | Boss Defeated: {} | Player Died: {}".format(action.marker + 1, action.cards, action.boss_defeated, action.player_died))
+
+def logState(logger, state):
+    logger.info("STATE LOG: BEGIN")
+    for player in state.players:
+        logger.info(player.name + "'s Hand: " + str(player.hand))
+
+    logger.info("Tavern: " + str(state.tavern.cards))
+    logger.info("Castle: " + str(state.castle.cards))
+    logger.info("Discard: " + str(state.discard.cards))
+    logger.info("Active Player: " + str(state.currentPlayer() + 1))
+
+    logger.info("STATE LOG: END")
+
+def logTime(logger, max_count, time):
+    logger.info("Max Count: {} | Time(s): {}".format(max_count, time))
 
 main()
