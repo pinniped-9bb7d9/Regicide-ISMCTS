@@ -14,8 +14,15 @@ from Game.Regicide.regicide_board import RegicideBoard
 from ISMCTS.Game.regicide_node import RegicideNode
 from ISMCTS.Base.timer import Timer
 
+# PyInstaller Prompt
+## Windows
+### pyinstaller --onefile --add-data "Cards;Cards" --add-data "Game;Game" --add-data "ISMCTS;ISMCTS" ISMCTS/main.py
+## macOS
+###  pyinstaller --onefile \ --add-data "Cards:Cards" \ --add-data "Game:Game" \ --add-data "ISMCTS:ISMCTS" \ ISMCTS/main.py
+
+
 def main():
-    # CONFIG - Allow the ability to configurate maximum runs and maximum time
+    # CONFIG - Allow the ability to configure maximum runs and maximum time
     max_runs = validMaxRuns()
     max_time = validMaxTime() # in (s)
     action_state_logging = False
@@ -32,11 +39,9 @@ def main():
     if time_logging:
         time_logger = initialiseTimeLogger()
 
-    # TODO - Learn how to properly log in Python
     #main_game_state.print_board()
     #print("")
 
-    # TODO - not implemented AI right away - checking gameplay loop works first
     root_node = RegicideNode()
 
     game_over = False
@@ -84,13 +89,11 @@ def main():
             print("AI is thinking...\n")
 
             while run_count < max_runs and current_time < max_time:
-                # TODO - Fix the recursion within the select function in order to return correctly selected node
                 selected_node = root_node.Select()
 
                 expanded_node = selected_node.Expand()
 
                 if expanded_node:
-                    # TODO - Learn how to properly log in Python
                     #print("Simulation Called!")
                     expanded_node.Simulate()
 
@@ -134,6 +137,8 @@ def main():
     elif winner == Result.ALIVE:
         print("YOU'RE ALIVE!")
         game_over = True;
+
+    input("Press enter to close application: ")
 
     # NOTE - turning off state and action log whilst taking timing results
     if action_state_logging:

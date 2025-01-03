@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['ISMCTS/main.py'],
+    ['ISMCTS\\main.py'],
     pathex=[],
     binaries=[],
     datas=[('Cards', 'Cards'), ('Game', 'Game'), ('ISMCTS', 'ISMCTS')],
