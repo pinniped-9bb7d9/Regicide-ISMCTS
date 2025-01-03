@@ -35,6 +35,7 @@ class Castle(Deck):
         random.shuffle(queens)
         random.shuffle(jacks)
 
+        # CONFIG - You can pick and choose what makes up the castle deck - I removed the queens and kings in order to feasible debug the reward system
         self.cards += kings
         self.cards += queens
         self.cards += jacks

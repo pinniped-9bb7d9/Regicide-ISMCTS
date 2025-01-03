@@ -1,0 +1,10 @@
+2025-01-01 15:00:39,321 - I log states! :D
+2025-01-01 15:00:39,321 - STATE LOG: BEGIN
+2025-01-01 15:00:39,321 - Noah's Hand: [8S, 9H, 2H, 5C, 4H, 2C, 3C]
+2025-01-01 15:00:39,321 - Eve's Hand: [6D, 4S, 3H, 8H, 5D, 2D, AH]
+2025-01-01 15:00:39,321 - Boss: Rank: 11 | Suit C | Attack 10 | Health 20
+2025-01-01 15:00:39,322 - Tavern: [2S, 3S, 4C, 7H, 8D, TD, 5H, 5S, 6S, 6C, AD, AS, 9S, 3D, 4D, 7C, 7S, AC, 6H, 9D, TH, TS, 7D, 9C, 8C, TC]
+2025-01-01 15:00:39,322 - Castle: [KH, KC, KD, KS, QD, QH, QS, QC, JS, JD, JH]
+2025-01-01 15:00:39,322 - Discard: []
+2025-01-01 15:00:39,322 - Active Player: 1
+2025-01-01 15:00:39,322 - STATE LOG: END

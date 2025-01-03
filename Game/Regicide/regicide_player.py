@@ -44,15 +44,18 @@ class RegicidePlayer(Player):
                 print(self.name + "'s hand:", self.hand)
 
                 # TODO - assuming user input is always valid
-                index = int(input("Which card do you want to use to defend yourself? (Enter index): "))
+                index = validPlay(self.hand)
+                #index = int(input("Which card do you want to use to defend yourself? (Enter index): "))
                 print("")
 
                 card = self.hand[index]
                 self.hand.remove(card)
                 discarded.append(card)
                 defence += card.rank
+                damage_left = max(damage - defence, 0)
 
-                print("Damage left to mitigate:", max(damage - defence, 0))
+                if damage_left != 0:
+                    print("Damage left to mitigate:", damage_left, "\n")
 
             if len(self.hand) == 0:
                 print(self.name, "died!")
@@ -76,6 +79,23 @@ class RegicidePlayer(Player):
 
             return discarded
 
+# input validation
+def validPlay(legal_plays):
+    valid = False
+    play_index = input("Which hand would you like to play (Enter index): ")
+    while not valid:
+        try:
+             if -len(legal_plays) <= int(play_index) < len(legal_plays):
+                 play_index = int(play_index)
+                 valid = True
+             else:
+                 play_index = input("Please enter a valid index (Enter index): ")
+        except ValueError:
+            play_index = input("Please enter a valid (integer) index (Enter index): ")
+
+    return play_index
+
+# testing function
 def player():
     player = RegicidePlayer("Noah")
 

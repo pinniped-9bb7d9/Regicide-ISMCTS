@@ -2,6 +2,7 @@
 from copy import deepcopy
 from enum import Enum
 import random
+import logging
 
 # Internal Imports
 from Game.Base.board import Board
@@ -23,13 +24,34 @@ class RegicideBoard(Board):
         self.actions = []
         self.hand_size = 0
         self.consecutive_yields = 0
+        self.verbose = False # NOTE - if verbose is set to true - extensive logging on what exactly is happening to terminal
+
+        if self.verbose:
+            # REFERENCE - https://realpython.com/python-logging/#adjusting-the-log-level
+            logging.basicConfig(
+                format="\n%(asctime)s - %(levelname)s - %(message)s",
+                style="%",
+                datefmt="%Y-%m-%d %H:%M",
+                level=logging.INFO
+            )
 
     # def __repr__(self):
     #     return str(len(self.players))
 
     def start(self):
         # TODO - input validation
-        num_players = int(input("How many players would you like to play? (2-4): "))
+        valid = False
+        num_players = input("How many players would you like to have play? (2-4): ")
+        while not valid:
+            try:
+                if int(num_players) in [2, 3, 4]:
+                    num_players = int(num_players)
+                    valid = True
+                else:
+                    num_players = input("Please enter an appropriate amount of players... (2-4): ")
+            except ValueError:
+                num_players = input("Please enter an appropriate amount (integer) of players... (2-4): ")
+        print()
 
         for counter in range(num_players):
             name = input("What is Player " + str(counter + 1) + "'s name?: ")
@@ -48,6 +70,9 @@ class RegicideBoard(Board):
 
         self.castle.drawBoss()
 
+        if self.verbose:
+            self.logBoard()
+
     def currentPlayer(self):
         # it's player 1's turn (index 0) when game first begins
         if len(self.actions) == 0:
@@ -60,6 +85,7 @@ class RegicideBoard(Board):
 
         last_player = last_action.marker
         next_player = (last_player + 1) % len(self.players)
+
         return next_player
 
     # NOTE - 'play' is currently optional for debugging
@@ -89,7 +115,10 @@ class RegicideBoard(Board):
             return self
 
         self.consecutive_yields = 0
-        perfect_hit = self.castle.boss.cardEffect(play)
+        try:
+            perfect_hit = self.castle.boss.cardEffect(play)
+        except AttributeError:
+            raise Exception("Trying to cardEffect() a NoneType boss!")
         self.cardEffect(play)
 
         for card in play:
@@ -124,6 +153,11 @@ class RegicideBoard(Board):
 
         action = RegicideAction(current_player, play, boss_defeated, player_died)
         self.actions.append(action)
+
+        # NOTE - display piles as game progresses...
+        if self.verbose and not ai:
+            self.logBoard()
+
         return self
 
     def legalPlays(self, cards=None):
@@ -213,14 +247,15 @@ class RegicideBoard(Board):
 
         # NOTE - band-aid - redundant check of player hands in case of error
         for player in self.players:
-            if len(player.hand) == 0 and self.castle.boss.attack != 0:
-                result = Result.LOSS
+            if self.castle.boss:
+                if len(player.hand) == 0 and self.castle.boss.attack != 0:
+                    result = Result.LOSS
 
         if boss_condition:
             if last_action.boss_defeated:
                 result = Result.BOSS_DEFEATED
 
-        if last_action.boss_defeated and len(self.castle.cards) == 0:
+        if last_action.boss_defeated and len(self.castle.cards) == 0 and not self.castle.boss:
             result = Result.WIN
 
         return result
@@ -265,14 +300,16 @@ class RegicideBoard(Board):
     def applyDaimond(self, power):
         current_player = self.currentPlayer()
         counter = 0
-        full = 0
-        while counter < power and (len(self.tavern.cards) != 0 or len(self.tavern.boss) != 0) and full < len(self.players):
+        full = set([])
+        while counter < power and (len(self.tavern.cards) != 0 or len(self.tavern.boss) != 0) and len(full) < len(self.players):
             if len(self.players[current_player].hand) < self.hand_size:
+                # print(self.players[current_player].name + " is drawing a card from the Tavern!")
                 drawn_card = self.tavern.drawCard()
                 self.players[current_player].hand.append(drawn_card)
                 counter += 1
             else:
-                full += 1
+                # print(self.players[current_player].name + " has a full hand!")
+                full.add(self.players[current_player])
             current_player = (current_player + 1) % len(self.players)
 
     # REFERENCE - https://github.com/melvinzhang/ismcts/blob/master/ISMCTS.py (GameState.CloneAndRandomize())
@@ -326,6 +363,17 @@ class RegicideBoard(Board):
     # TODO - create readable representation of the regicide board state to be used during gameplay/debugging/logging
     # def __repr__(self):
     #     return str(len(self.players))
+
+    # logging functions
+    def logBoard(self):
+        # NOTE - show player's hands
+        for player in self.players:
+            logging.info("Player=%s | Hand=%s | Played=%s", player.name, player.hand, player.played)
+
+        logging.info("Castle=%s", self.castle.cards)
+        logging.info("Boss=%s | Attack=%s | Health=%s", self.castle.boss, self.castle.boss.attack, self.castle.boss.health)
+        logging.info("Tavern=%s", self.tavern.cards)
+        logging.info("Discard=%s", self.discard.cards)
 
 class Result(Enum):
     ALIVE = 0

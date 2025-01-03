@@ -1,0 +1,37 @@
+2025-01-01 15:00:49,154 - I log states! :D
+2025-01-01 15:00:49,154 - STATE LOG: BEGIN
+2025-01-01 15:00:49,154 - Noah's Hand: [8D, 6D, 4D, AD, 2C, TC, 3C]
+2025-01-01 15:00:49,154 - Ebe's Hand: [7H, 2D, 4C, 7D, 7S, 9S, 9H]
+2025-01-01 15:00:49,154 - Boss: Rank: 11 | Suit H | Attack 10 | Health 20
+2025-01-01 15:00:49,154 - Tavern: [9D, AS, AC, AH, 8S, 7C, 9C, TH, 3H, 4H, TD, 2H, 3D, 5S, 3S, 2S, 8C, 6S, 6H, 5H, 5D, 8H, TS, 5C, 6C, 4S]
+2025-01-01 15:00:49,154 - Castle: [KD, KH, KS, KC, QS, QD, QC, QH, JC, JD, JS]
+2025-01-01 15:00:49,155 - Discard: []
+2025-01-01 15:00:49,155 - Active Player: 1
+2025-01-01 15:00:49,155 - STATE LOG: END
+2025-01-01 15:00:50,857 - STATE LOG: BEGIN
+2025-01-01 15:00:50,857 - Noah's Hand: [2C, 3C, 4D, 6D, 8D]
+2025-01-01 15:00:50,857 - Ebe's Hand: [7H, 2D, 4C, 7D, 7S, 9S, 9H]
+2025-01-01 15:00:50,857 - Boss: Rank: 11 | Suit S | Attack 10 | Health 20
+2025-01-01 15:00:50,857 - Tavern: [9D, AS, AC, AH, 8S, 7C, 9C, TH, 3H, 4H, TD, 2H, 3D, 5S, 3S, 2S, 8C, 6S, 6H, 5H, 5D, 8H, TS, 5C, 6C, 4S]
+2025-01-01 15:00:50,857 - Castle: [KD, KH, KS, KC, QS, QD, QC, QH, JC, JD]
+2025-01-01 15:00:50,857 - Discard: [AD, TC, JH]
+2025-01-01 15:00:50,857 - Active Player: 1
+2025-01-01 15:00:50,857 - STATE LOG: END
+2025-01-01 15:00:55,579 - STATE LOG: BEGIN
+2025-01-01 15:00:55,580 - Noah's Hand: [2C, 3C, 4D, 6D]
+2025-01-01 15:00:55,580 - Ebe's Hand: [7H, 2D, 4C, 7D, 7S, 9S, 9H]
+2025-01-01 15:00:55,580 - Boss: Rank: 11 | Suit S | Attack 10 | Health 12
+2025-01-01 15:00:55,580 - Tavern: [9D, AS, AC, AH, 8S, 7C, 9C, TH, 3H, 4H, TD, 2H, 3D, 5S, 3S, 2S, 8C, 6S, 6H, 5H, 5D, 8H, TS, 5C]
+2025-01-01 15:00:55,580 - Castle: [KD, KH, KS, KC, QS, QD, QC, QH, JC, JD]
+2025-01-01 15:00:55,580 - Discard: [AD, TC, JH, 6C, 4S]
+2025-01-01 15:00:55,581 - Active Player: 2
+2025-01-01 15:00:55,581 - STATE LOG: END
+2025-01-01 15:00:57,565 - STATE LOG: BEGIN
+2025-01-01 15:00:57,565 - Noah's Hand: [2C, 3C, 4D, 6D]
+2025-01-01 15:00:57,565 - Ebe's Hand: [2D, 4C, 7D, 7S]
+2025-01-01 15:00:57,565 - Boss: Rank: 11 | Suit S | Attack 10 | Health 5
+2025-01-01 15:00:57,565 - Tavern: [6C, TC, AD, JH, 4S, 9D, AS, AC, AH, 8S, 7C, 9C, TH, 3H, 4H, TD, 2H, 3D, 5S, 3S, 2S, 8C, 6S, 6H, 5H, 5D, 8H, TS, 5C]
+2025-01-01 15:00:57,565 - Castle: [KD, KH, KS, KC, QS, QD, QC, QH, JC, JD]
+2025-01-01 15:00:57,565 - Discard: [9S, 9H]
+2025-01-01 15:00:57,565 - Active Player: 1
+2025-01-01 15:00:57,565 - STATE LOG: END

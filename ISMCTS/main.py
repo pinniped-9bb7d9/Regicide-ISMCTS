@@ -5,6 +5,7 @@
 from copy import deepcopy
 import logging
 import datetime
+from math import inf
 
 # Internal Imports
 from Game.Regicide.regicide_board import Result
@@ -14,17 +15,22 @@ from ISMCTS.Game.regicide_node import RegicideNode
 from ISMCTS.Base.timer import Timer
 
 def main():
-    max_runs = 1000000
-    max_time = 10000000000
+    # CONFIG - Allow the ability to configurate maximum runs and maximum time
+    max_runs = validMaxRuns()
+    max_time = validMaxTime() # in (s)
+    action_state_logging = False
+    time_logging = False
     main_game_state = RegicideBoard()
     main_game_state.start()
 
     # NOTE - turning off state and action log whilst taking timing results
-    #action_logger = initialiseActionLogger()
-    #state_logger = initialiseStateLogger()
-    #logState(state_logger, main_game_state)
+    if action_state_logging:
+        action_logger = initialiseActionLogger()
+        state_logger = initialiseStateLogger()
+        logState(state_logger, main_game_state)
 
-    time_logger = initialiseTimeLogger()
+    if time_logging:
+        time_logger = initialiseTimeLogger()
 
     # TODO - Learn how to properly log in Python
     #main_game_state.print_board()
@@ -39,18 +45,19 @@ def main():
 
         next_turn = main_game_state.currentPlayer()
 
-        # TODO - Player is currently set to player 1 - all other players are set to an AI
+        # NOTE - Player is currently set to player 1 - all other players are set to an AI
         if next_turn == 0: # Player's Turn
             print(main_game_state.players[main_game_state.currentPlayer()].name + "'s Turn:")
             legal_plays = main_game_state.legalPlays(main_game_state.players[next_turn].hand)
             print("Boss:", main_game_state.castle.boss, "| Health:", main_game_state.castle.boss.health, "| Attack:",
                   main_game_state.castle.boss.attack)
             print(legal_plays)
-            play_index = int(input("Which hand would you like to play (Enter index): "))
+            play_index = validPlay(legal_plays)
             print("")
             main_game_state = main_game_state.nextState(legal_plays[play_index])
             # NOTE - turning off state and action log whilst taking timing results
-            #logState(state_logger, main_game_state)
+            if action_state_logging:
+                logState(state_logger, main_game_state)
 
             state = main_game_state.winner()
 
@@ -59,13 +66,12 @@ def main():
 
         else: # AI's Turn
 
-            print("AI is thinking...")
             print(main_game_state.players[main_game_state.currentPlayer()].name + "'s Turn:")
             print("Boss:", main_game_state.castle.boss, "| Health:", main_game_state.castle.boss.health, "| Attack:",
                   main_game_state.castle.boss.attack)
             legal_plays = main_game_state.legalPlays(main_game_state.players[next_turn].hand)
             print(legal_plays)
-            input()
+            input("Enter any input to continue:\n")
 
             root_node.setGameState(deepcopy(main_game_state))
             root_node.setActivePlayer()
@@ -74,6 +80,8 @@ def main():
             current_time = 0
             timer = Timer()
             timer.start()
+
+            print("AI is thinking...\n")
 
             while run_count < max_runs and current_time < max_time:
                 # TODO - Fix the recursion within the select function in order to return correctly selected node
@@ -88,21 +96,24 @@ def main():
 
                 run_count += 1
                 current_time = timer.check()
-                # print("Current run count:", run_count)
-
-            total_time = timer.check()
-            timer.stop()
+                #print("Current run count:", run_count)
 
             # NOTE - log total elapsed time to go run_count
-            logTime(time_logger, max_runs, total_time)
+            if time_logging:
+                total_time = timer.check()
+                logTime(time_logger, max_runs, total_time)
+
+            timer.stop()
 
             highest_child = root_node.findHighestRankingChild()
             ai_action = highest_child.getGameAction()
             print("AI's Final Move:", ai_action)
             print("")
             main_game_state = main_game_state.nextState(ai_action, True)
+
             # NOTE - turning off state and action log whilst taking timing results
-            #logState(state_logger, main_game_state)
+            if action_state_logging:
+                logState(state_logger, main_game_state)
 
             root_node.resetNode()
 
@@ -125,13 +136,57 @@ def main():
         game_over = True;
 
     # NOTE - turning off state and action log whilst taking timing results
-    #logActions(action_logger, main_game_state.actions)
+    if action_state_logging:
+        logActions(action_logger, main_game_state.actions)
+
+# input validation
+def validPlay(legal_plays):
+    valid = False
+    play_index = input("Which hand would you like to play (Enter index): ")
+    while not valid:
+        try:
+             if -len(legal_plays) <= int(play_index) < len(legal_plays):
+                 play_index = int(play_index)
+                 valid = True
+             else:
+                 play_index = input("Please enter a valid index (Enter index): ")
+        except ValueError:
+            play_index = input("Please enter a valid (integer) index (Enter index): ")
+
+    return play_index
+
+# setting functions
+def validMaxRuns():
+    valid = False
+    max_runs = input("How many simulation attempts would you like the AI to run?: ")
+    while not valid:
+        try:
+            if 0 <= int(max_runs):
+                max_runs = int(max_runs)
+                valid = True
+            else:
+                max_runs = input("Please enter a valid input for maximum runs (Integer > 0): ")
+        except ValueError:
+            max_runs = input("Please enter a valid input for maximum runs (Integer > 0): ")
+
+    return max_runs
+
+def validMaxTime():
+    valid = False
+    max_time = input("How many seconds would you like the AI to run?: ")
+    while not valid:
+        try:
+            if 0 <= float(max_time):
+                max_time = float(max_time)
+                valid = True
+            else:
+                max_time = input("Please enter a valid input for maximum time (s) (Float > 0): ")
+        except ValueError:
+            max_time = input("Please enter a valid input for maximum time (s) (Float > 0): ")
+
+    return max_time
 
 # logging functions
-
-import logging
-import datetime
-
 def initialiseActionLogger():
     now = datetime.datetime.now()
     now_str = now.strftime("%d%m%y%H%M%S")
@@ -191,6 +246,9 @@ def logState(logger, state):
     logger.info("STATE LOG: BEGIN")
     for player in state.players:
         logger.info(player.name + "'s Hand: " + str(player.hand))
+
+    boss = state.castle.boss
+    logger.info("Boss: Rank: {} | Suit {} | Attack {} | Health {}".format(boss.rank, boss.suit, boss.attack, boss.health))
 
     logger.info("Tavern: " + str(state.tavern.cards))
     logger.info("Castle: " + str(state.castle.cards))

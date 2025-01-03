@@ -3,6 +3,7 @@ import random
 from copy import deepcopy
 from math import sqrt
 from math import log
+from math import inf
 
 from Game.Regicide.regicide_action import RegicideAction
 # Internal Imports
@@ -19,7 +20,7 @@ class RegicideNode(Node):
         self.active_player = None
         self.ranking = 0
         self.depth = 0
-        self.visits = 0
+        self.visits = 1 #NOTE - visits is set to one when the node is first initialised...
         self.available_moves = []
         self.branches = []
         self.rank = 0
@@ -65,9 +66,11 @@ class RegicideNode(Node):
     # MCTS functions
     # REFERENCE - https://github.com/melvinzhang/ismcts/blob/master/ISMCTS.py
     def Select(self, exploration=0.7):
-        random_select = False
+        # CONFIG - Set Selection Heuristic to Sophisticated or Random
+        random_select = True
 
-        # Prioritise fully expanding the root node...
+        # Prioritise a node if it has no branches
+        # Condition has to be 'or'
         if len(self.branches) == 0 or len(self.available_moves) > 0:
             return self
         else:
@@ -75,28 +78,38 @@ class RegicideNode(Node):
                 random_branch = random.randint(0, len(self.branches) - 1)
                 return self.branches[random_branch].Select()
 
-            # NOTE - USB1 Selection
-            # NOTE - + 1 to child visits to avoid divide by zero
+            # NOTE - USB1 Selection - Perhaps not useful/effective due to the simulations of the child branches not being statistically significant...
             try:
-                selection = max(self.branches,
-                                key=lambda child: float(child.ranking) / float(child.visits + 1)
-                                + exploration * sqrt(log(child.parent.visits) / float(child.visits + 1)),
-                                )
+                rankings = []
+                child_index = []
+                for child in self.branches:
+                    if child.available_moves:
+                        rank = float(child.ranking) / float(child.visits) + exploration * sqrt(log(child.parent.visits) / float(child.visits))
+                        rankings.append(rank)
+                        child_index.append(self.branches.index(child))
+
+                max_rank = max(rankings)
+                selection = self.branches[child_index[rankings.index(max_rank)]]
 
                 return selection.Select()
             except ValueError:
                 random_branch = random.randint(0, len(self.branches) - 1)
                 return self.branches[random_branch].Select()
+            except ZeroDivisionError:
+                raise Exception("Division by zero!")
 
     def Expand(self):
-        #self.generate_possible_moves(self.getGameState().players[self.active_player].hand)
+        # NOTE - ensure that the function has the correct available_moves
+        self.generate_possible_moves(self.getGameState().players[self.active_player].hand)
 
         if self.end_state or len(self.available_moves) == 0:
             #raise Exception("Invalid Expand!")
+            print("Trying to expand an end state!")
             return None
         else:
+            # print("Not expanding an end-state!")
 
-            # TODO - add sophisticated expand heuristics
+            # CONFIG - Configuration Options for Expansion Heuristics
             combo_check = True
             suit_check = True
             duplicate_check = True
@@ -109,8 +122,6 @@ class RegicideNode(Node):
             child_node.branches = []
             child_node.setParent(self)
             child_node.setDepth(self.depth + 1)
-
-
 
             new_game_state = deepcopy(self.game_state)
 
@@ -143,7 +154,7 @@ class RegicideNode(Node):
         boss_bonus = 0
         self.end_state = False
 
-        if winner != Result.ALIVE:
+        if winner == Result.WIN or winner == Result.LOSS:
             # TODO - band-aid fix - I think the selection algorithm is choosing branches which already are finished game-states so I need to set available branches of that node type to none.
             self.available_moves = []
             self.calculateResult(winner)
@@ -153,7 +164,7 @@ class RegicideNode(Node):
             possible_moves = deepcopy(random_game_state.legalPlays(random_game_state.players[random_game_state.currentPlayer()].hand))
 
             if len(possible_moves) == 0:
-                self.end_state = True
+                self.end_state = False
                 self.calculateResult(Result.LOSS)
                 return
 
@@ -193,11 +204,11 @@ class RegicideNode(Node):
         if not self.branches:
             raise Exception("Error: 'findHighestRankingChild()' called without a branch list!")
 
-        max_ranking = -1000.0
+        max_ranking = -inf
         max_index = 0
 
         for i in range(len(self.branches)):
-            self.rank = self.branches[i].getRanking() / (self.branches[i].depth + 1)
+            self.rank = self.branches[i].getRanking() / (self.branches[i].visits)
             if self.rank > max_ranking:
                 max_ranking = self.rank
                 max_index = i
@@ -205,16 +216,21 @@ class RegicideNode(Node):
         return self.branches[max_index]
 
     def calculateResult(self, winner, boss_bonus = 0):
+        # CONFIG - Any end state that results in a win is dramatically prioritised
+        reward = 1000000000
+        # CONFIG - AI is impartial to losses - only considering  the defeating of bosses
+        punishment = 0
         if winner == Result.WIN:
-            self.Backpropagate(1 + boss_bonus)
+            # CONFIG - Don't need to add boss bonus since reward is so high
+            self.Backpropagate(reward)
         elif winner == Result.LOSS:
-            self.Backpropagate(-1 + boss_bonus)
+            self.Backpropagate(punishment + boss_bonus)
         return
 
     def resetNode(self):
         self.branches = []
         self.ranking = 0
-        self.visits = 0
+        self.visits = 1
         self.depth = 0
         self.available_moves = []
 

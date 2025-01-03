@@ -1,0 +1,11 @@
+2025-01-01 15:01:47,208 - I log actions! :D
+2025-01-01 15:03:04,733 - Player: 1 | Cards Played: [9S] | Boss Defeated: False | Player Died: False
+2025-01-01 15:03:04,733 - Player: 2 | Cards Played: [3H] | Boss Defeated: False | Player Died: False
+2025-01-01 15:03:04,733 - Player: 1 | Cards Played: [9D] | Boss Defeated: True | Player Died: False
+2025-01-01 15:03:04,733 - Player: 1 | Cards Played: [8C] | Boss Defeated: False | Player Died: False
+2025-01-01 15:03:04,733 - Player: 2 | Cards Played: [AD, 4D] | Boss Defeated: True | Player Died: False
+2025-01-01 15:03:04,733 - Player: 2 | Cards Played: None | Boss Defeated: False | Player Died: False
+2025-01-01 15:03:04,733 - Player: 1 | Cards Played: [4C, 4S] | Boss Defeated: False | Player Died: False
+2025-01-01 15:03:04,733 - Player: 2 | Cards Played: None | Boss Defeated: False | Player Died: False
+2025-01-01 15:03:04,733 - Player: 1 | Cards Played: [3C] | Boss Defeated: True | Player Died: False
+2025-01-01 15:03:04,733 - Player: 1 | Cards Played: [5S] | Boss Defeated: False | Player Died: True
