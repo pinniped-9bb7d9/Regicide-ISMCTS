@@ -98,6 +98,7 @@ class RegicideBoard(Board):
         boss_defeated = False
         player_died = False
 
+
         if not play:
             self.consecutive_yields += 1
 
@@ -114,19 +115,23 @@ class RegicideBoard(Board):
             self.actions.append(action)
             return self
 
+        # Set cards to played first to check its a valid move before applying card effects
+        for card in play:
+            self.players[current_player].setCardToPlayed(card)
+
         self.consecutive_yields = 0
+
         try:
             perfect_hit = self.castle.boss.cardEffect(play)
         except AttributeError:
             raise Exception("Trying to cardEffect() a NoneType boss!")
         self.cardEffect(play)
 
-        for card in play:
-            self.players[current_player].setCardToPlayed(card)
-
         # TEST - If player defeats the boss - put all the cards the played into the discard pile have the same player start the next phase
         # NOTE - perfect hit adding current boss to tavern deck isn't currently implemented
         if self.castle.boss.health == 0:
+            if not ai:
+                print("Boss Defeated!")
             for player in self.players:
                 if len(player.played) != 0:
                     self.discard.addCards(deepcopy(player.played))
@@ -237,8 +242,11 @@ class RegicideBoard(Board):
         # NOTE - Boss Reward Check Parameter
         boss_condition = True
 
-        if not last_action:
-            last_action = self.actions[-1]
+        try:
+            if not last_action:
+                last_action = self.actions[-1]
+        except IndexError:
+            return Result.ALIVE # Game just started
 
         result = Result.ALIVE
 
@@ -360,9 +368,37 @@ class RegicideBoard(Board):
 
         return state
 
-    # TODO - create readable representation of the regicide board state to be used during gameplay/debugging/logging
-    # def __repr__(self):
-    #     return str(len(self.players))
+    # print lengths of each players hand to the terminal
+    def displayHandLengths(self):
+        if len(self.players) < 2:
+            raise Exception ("Invalid call to displayHandLengths()! - Invalid amount of players!")
+
+        string = "Hand Sizes - "
+        for player in self.players:
+            string += (player.name + " - " + str(len(player.hand)))
+            if player != self.players[-1]:
+                string += " | "
+
+        print(string)
+
+    def diamondCheck(self, hands=None):
+        if not hands:
+            hands = []
+            for player in self.players:
+                hands.append(player.hand)
+
+        # flatten cards in player hands into one list
+        # REFERENCE - https://stackoverflow.com/questions/952914/how-do-i-make-a-flat-list-out-of-a-list-of-lists
+        cards_in_hands = [card for hand in hands for card in hand]
+
+        # check for diamond
+        diamonds = [card for card in cards_in_hands if card.suit == "D"]
+
+        if len(diamonds) != 0:
+            return False
+        else:
+            return True
+
 
     # logging functions
     def logBoard(self):

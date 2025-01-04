@@ -1,0 +1,19 @@
+2025-01-04 19:39:03,192 - I log states! :D
+2025-01-04 19:39:03,193 - STATE LOG: BEGIN
+2025-01-04 19:39:03,193 - Noah's Hand: [6D, 8S, 7C, TC, 2S, 4D, AS]
+2025-01-04 19:39:03,193 - Eve's Hand: [6C, 3S, 6H, 9C, 3C, 5S, TH]
+2025-01-04 19:39:03,193 - Boss: Rank: 11 | Suit D | Attack 10 | Health 20
+2025-01-04 19:39:03,193 - Tavern: [AD, 4S, AC, 7H, 2D, 5C, 9S, 4H, 5H, TD, 7D, 2C, 8H, AH, 7S, 2H, 4C, 8C, 6S, 8D, 9D, 9H, 3H, 3D, 5D, TS]
+2025-01-04 19:39:03,193 - Castle: [KC, KS, KD, KH, QS, QH, QD, QC, JH, JS, JC]
+2025-01-04 19:39:03,193 - Discard: []
+2025-01-04 19:39:03,193 - Active Player: 1
+2025-01-04 19:39:03,193 - STATE LOG: END
+2025-01-04 19:39:05,111 - STATE LOG: BEGIN
+2025-01-04 19:39:05,111 - Noah's Hand: [2S, 4D, 6D, 7C, 8S]
+2025-01-04 19:39:05,111 - Eve's Hand: [6C, 3S, 6H, 9C, 3C, 5S, TH]
+2025-01-04 19:39:05,111 - Boss: Rank: 11 | Suit C | Attack 10 | Health 20
+2025-01-04 19:39:05,111 - Tavern: [AD, 4S, AC, 7H, 2D, 5C, 9S, 4H, 5H, TD, 7D, 2C, 8H, AH, 7S, 2H, 4C, 8C, 6S, 8D, 9D, 9H, 3H, 3D, 5D, TS]
+2025-01-04 19:39:05,111 - Castle: [KC, KS, KD, KH, QS, QH, QD, QC, JH, JS]
+2025-01-04 19:39:05,111 - Discard: [AS, TC, JD]
+2025-01-04 19:39:05,111 - Active Player: 1
+2025-01-04 19:39:05,111 - STATE LOG: END

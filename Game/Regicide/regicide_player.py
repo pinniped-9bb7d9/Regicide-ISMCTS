@@ -1,3 +1,6 @@
+# External Imports
+import random
+
 # Internal Imports
 from Cards.Base.card import Card
 from Game.Base.player import Player
@@ -65,17 +68,32 @@ class RegicidePlayer(Player):
         else:
 
             while defence < damage and len(self.hand) > 0:
-                # TODO - AI currently just selects the last card in it's hand.
-                index = -1
 
-                card = self.hand[index]
+                if len(self.hand) == 0:
+                    # print(self.name, "died!")
+                    return False
+
+                # TODO - AI currently just selects a random card in it's hand - prioritise not disposing diamonds or face cards
+                non_diamond = [card for card in self.hand if card.suit != "D"]
+                face_ranks = ["J", "K", "Q"]
+                non_face = [card for card in self.hand if card.rank not in face_ranks]
+
+                selection = self.hand
+
+                if len(non_diamond) != 0 and len(non_face) != 0:
+                    selection = [card for card in self.hand if card in non_diamond and card in non_face]
+
+                    # NOTE - if the hand only contains diamonds and face cards - save diamonds
+                    if len(selection) == 0:
+                        selection = non_diamond
+
+                index = random.randint(0, len(selection) - 1)
+
+                card = selection[index]
                 self.hand.remove(card)
                 discarded.append(card)
                 defence += card.rank
 
-            if len(self.hand) == 0:
-                # print(self.name, "died!")
-                return False
 
             return discarded
 
