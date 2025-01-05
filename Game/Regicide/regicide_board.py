@@ -247,7 +247,7 @@ class RegicideBoard(Board):
         return legal_plays
 
     def winner(self, last_action=None):
-        # NOTE - Boss Reward Check Parameter
+        # CONFIG - Boss Reward Check Parameter
         boss_condition = True
 
         try:

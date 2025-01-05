@@ -26,7 +26,7 @@ def main():
     max_runs = validMaxRuns()
     max_time = validMaxTime() # in (s)
     action_state_logging = False
-    time_logging = True
+    time_logging = False
     result_logging = False
     main_game_state = RegicideBoard()
     main_game_state.start()
@@ -182,7 +182,7 @@ def main():
             print("AI's Final Move:", ai_action, end="\n\n")
             main_game_state = main_game_state.nextState(ai_action, True, True)
 
-            input("Enter any input to continue:\n")
+            #input("Enter any input to continue:\n")
 
             # NOTE - turning off state and action log whilst taking timing results
             if action_state_logging:

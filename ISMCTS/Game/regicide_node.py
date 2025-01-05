@@ -152,6 +152,7 @@ class RegicideNode(Node):
         # Determinize
         random_game_state = self.getGameState().cloneAndRandomize(next_turn)
 
+        # CONFIG - check if players have any diamonds
         diamond_check = self.getGameState().diamondCheck()
 
         winner = self.getGameState().winner()
@@ -170,9 +171,11 @@ class RegicideNode(Node):
         while not self.end_state:
             possible_moves = deepcopy(random_game_state.legalPlays(random_game_state.players[random_game_state.currentPlayer()].hand))
 
+            # NOTE - end the simulation immediately if the players lose thanks to the initial expansion move
             if len(possible_moves) == 0:
-                self.end_state = True
-                self.calculateResult(Result.LOSS, 0, 0)
+                self.end_state = False
+                self.calculateResult(Result.LOSS, boss_bonus, surviving_turns) # boss_bonus & surviving_turns initially 0
+                self.setGameState(game_state_copy, game_action_copy)
                 return
 
             else:
@@ -202,7 +205,6 @@ class RegicideNode(Node):
 
             # redundant conditions but kept for readability
             elif winner == Result.LOSS or winner == Result.WIN: # i.e not ALIVE or BOSS_DEFEATED
-                # OPTIMIZE - if diamond_check is true wouldn't the punishment be so severe that there is no point in continuing simulation?
                 self.calculateResult(winner, boss_bonus, surviving_turns, diamond_check)
                 self.end_state = False
                 self.setGameState(game_state_copy, game_action_copy)
