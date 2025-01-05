@@ -1,0 +1,54 @@
+2025-01-04 23:32:56,759 - I log actions! :D
+2025-01-04 23:38:53,074 - Player: 1 | Cards Played: None | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,075 - Player: 2 | Cards Played: [AH, 4S] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,075 - Player: 1 | Cards Played: [6D] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,075 - Player: 2 | Cards Played: [AD, 8H] | Boss Defeated: True | Player Died: False
+2025-01-04 23:38:53,075 - Player: 2 | Cards Played: [7C] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,075 - Player: 1 | Cards Played: [6H] | Boss Defeated: True | Player Died: False
+2025-01-04 23:38:53,075 - Player: 1 | Cards Played: [2H] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,075 - Player: 2 | Cards Played: [8D] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,075 - Player: 1 | Cards Played: [AS] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,075 - Player: 2 | Cards Played: [9D] | Boss Defeated: True | Player Died: False
+2025-01-04 23:38:53,075 - Player: 2 | Cards Played: [7S] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,075 - Player: 1 | Cards Played: [3S] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,075 - Player: 2 | Cards Played: [3D] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,075 - Player: 1 | Cards Played: [2S] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,075 - Player: 2 | Cards Played: None | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,075 - Player: 1 | Cards Played: [4D] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,075 - Player: 2 | Cards Played: None | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,075 - Player: 1 | Cards Played: [2D] | Boss Defeated: True | Player Died: False
+2025-01-04 23:38:53,075 - Player: 1 | Cards Played: [TS] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,075 - Player: 2 | Cards Played: [AC, 9H] | Boss Defeated: True | Player Died: False
+2025-01-04 23:38:53,075 - Player: 2 | Cards Played: [JD] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,075 - Player: 1 | Cards Played: [7H] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 2 | Cards Played: [5D, 5H] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 1 | Cards Played: [AH] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 2 | Cards Played: [AD, 8H] | Boss Defeated: True | Player Died: False
+2025-01-04 23:38:53,076 - Player: 2 | Cards Played: [7S] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 1 | Cards Played: None | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 2 | Cards Played: [2D] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 1 | Cards Played: [AS, 7D] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 2 | Cards Played: None | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 1 | Cards Played: [AC] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 2 | Cards Played: None | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 1 | Cards Played: [2C] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 2 | Cards Played: None | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 1 | Cards Played: [6D] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 2 | Cards Played: [3H] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 1 | Cards Played: None | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 2 | Cards Played: [TD] | Boss Defeated: True | Player Died: False
+2025-01-04 23:38:53,076 - Player: 2 | Cards Played: [JS] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 1 | Cards Played: [8S] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 2 | Cards Played: None | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 1 | Cards Played: [2H] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 2 | Cards Played: None | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 1 | Cards Played: [6H] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 2 | Cards Played: [5C] | Boss Defeated: True | Player Died: False
+2025-01-04 23:38:53,076 - Player: 2 | Cards Played: [TS] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 1 | Cards Played: [9D] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 2 | Cards Played: [4D] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 1 | Cards Played: [AS] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 2 | Cards Played: [3D] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 1 | Cards Played: [8D] | Boss Defeated: False | Player Died: False
+2025-01-04 23:38:53,076 - Player: 2 | Cards Played: [6D] | Boss Defeated: True | Player Died: False
+2025-01-04 23:38:53,076 - Player: 2 | Cards Played: [2S] | Boss Defeated: False | Player Died: True

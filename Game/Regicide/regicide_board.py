@@ -89,7 +89,7 @@ class RegicideBoard(Board):
         return next_player
 
     # NOTE - 'play' is currently optional for debugging
-    def nextState(self, play=None, ai=False):
+    def nextState(self, play=None, ai=False, final=False):
         # FIXME - This is the problem line of code...
         current_player = self.currentPlayer()
 
@@ -125,19 +125,24 @@ class RegicideBoard(Board):
             perfect_hit = self.castle.boss.cardEffect(play)
         except AttributeError:
             raise Exception("Trying to cardEffect() a NoneType boss!")
-        self.cardEffect(play)
+        if not ai or final:
+            self.cardEffect(play)
+        else:
+            self.cardEffect(play, True)
 
         # TEST - If player defeats the boss - put all the cards the played into the discard pile have the same player start the next phase
         # NOTE - perfect hit adding current boss to tavern deck isn't currently implemented
         if self.castle.boss.health == 0:
-            if not ai:
+            if not ai or final:
                 print("Boss Defeated!")
             for player in self.players:
                 if len(player.played) != 0:
+                    if not ai or final:
+                        print(player.name + "'s Played Cards added to Discard Pile:", player.played)
                     self.discard.addCards(deepcopy(player.played))
                 player.played = []
             if perfect_hit:
-                if not ai:
+                if not ai or final:
                     print("Perfect Hit!")
                 self.tavern.addBoss(self.castle.boss)
             else:
@@ -154,6 +159,9 @@ class RegicideBoard(Board):
                 player_died = True
             else:
                 if len(discarded) != 0:
+                    # TEMP - print for testing
+                    if not ai or final:
+                        print("Discarded Defence:", discarded)
                     self.discard.addCards(deepcopy(discarded))
 
         action = RegicideAction(current_player, play, boss_defeated, player_died)
@@ -268,7 +276,7 @@ class RegicideBoard(Board):
 
         return result
 
-    def cardEffect(self,  cards):
+    def cardEffect(self, cards, ai = False):
 
         try:
             length = len(cards)
@@ -288,13 +296,13 @@ class RegicideBoard(Board):
                 diamond_check = True
 
         if heart_check:
-            self.applyHeart(power)
+            self.applyHeart(power, ai)
 
         if diamond_check:
-            self.applyDaimond(power)
+            self.applyDaimond(power, ai)
 
     # NOTE - spade and clubs effects are written in the Boss class since they only apply to the current boss and not the current game state
-    def applyHeart(self, power):
+    def applyHeart(self, power, ai = False):
         if len(self.discard.cards) != 0:
             random.shuffle(self.discard.cards)
             counter = 0
@@ -303,20 +311,28 @@ class RegicideBoard(Board):
                 card = self.discard.drawCard()
                 drawn_cards.append(card)
                 counter += 1
+
+            # TEMP - print for testing
+            if not ai:
+                print("Cards being moved from the discard to tavern deck:", drawn_cards)
             self.tavern.cards = drawn_cards + self.tavern.cards
 
-    def applyDaimond(self, power):
+    def applyDaimond(self, power, ai = False):
         current_player = self.currentPlayer()
         counter = 0
         full = set([])
         while counter < power and (len(self.tavern.cards) != 0 or len(self.tavern.boss) != 0) and len(full) < len(self.players):
             if len(self.players[current_player].hand) < self.hand_size:
-                # print(self.players[current_player].name + " is drawing a card from the Tavern!")
+                # TEMP - print for testing
+                if not ai:
+                    print(self.players[current_player].name + " is drawing a card from the Tavern!")
                 drawn_card = self.tavern.drawCard()
                 self.players[current_player].hand.append(drawn_card)
                 counter += 1
             else:
-                # print(self.players[current_player].name + " has a full hand!")
+                # TEMP - print for testing
+                if not ai:
+                    print(self.players[current_player].name + " has a full hand!")
                 full.add(self.players[current_player])
             current_player = (current_player + 1) % len(self.players)
 

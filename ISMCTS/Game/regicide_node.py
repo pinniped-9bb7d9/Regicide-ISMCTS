@@ -25,11 +25,11 @@ class RegicideNode(Node):
         self.branches = []
 
         # CONFIG - heuristic toggle for ease of testing
-        self.selection_heuristics = True #UCT
+        self.selection_heuristics = False #UCT
         self.UCT_exploration = 0.7
 
-        self.expansion_heuristics = True
-        self.simulation_heuristics = True
+        self.expansion_heuristics = False
+        self.simulation_heuristics = False
 
     # setters
     def setGameState(self, new_state=None, new_action=None):

@@ -25,8 +25,8 @@ def main():
     # CONFIG - Allow the ability to configure maximum runs and maximum time
     max_runs = validMaxRuns()
     max_time = validMaxTime() # in (s)
-    action_state_logging = True
-    time_logging = False
+    action_state_logging = False
+    time_logging = True
     result_logging = False
     main_game_state = RegicideBoard()
     main_game_state.start()
@@ -38,7 +38,7 @@ def main():
         logState(state_logger, main_game_state)
 
     if time_logging:
-        time_logger = initialiseTimeLogger()
+        time_logger = initialiseTimeLogger("Blind")
 
     if result_logging:
         result_logger = initialiseResultLogger("Heavy")
@@ -111,12 +111,20 @@ def main():
                   "| Health:", main_game_state.castle.boss.health,
                   "| Attack:", main_game_state.castle.boss.attack)
 
+            print("Discard:", len(main_game_state.discard.cards),
+                  "| Tavern:", len(main_game_state.tavern.cards) + len(main_game_state.tavern.boss),
+                  "| Castle:", len(main_game_state.castle.cards))
+
+            # NOTE - if the tavern has bosses on top of it - display them to the player
+            if len(main_game_state.tavern.boss) > 0:
+                print("Tavern Face Cards:", main_game_state.tavern.boss)
+
             legal_plays = main_game_state.legalPlays(main_game_state.players[next_turn].hand)
 
             if len(legal_plays) == 0:
                 game_over = True
 
-            print(legal_plays)
+            print("Legal Plays:", legal_plays)
             #input("Enter any input to continue:\n")
 
             root_node.setGameState(deepcopy(main_game_state))
@@ -126,7 +134,7 @@ def main():
 
             # AI stops trying to simulate if it encounters too many dud expansions
             dud_runs = 0
-            dud_ratio = 10 # AI stops if dud_runs >= int(run_count/dud_ratio)
+            dud_ratio = 1 # AI stops if dud_runs >= int(run_count/dud_ratio)
             max_duds = int(max_runs/dud_ratio)
 
             # NOTE - if dud_ratio is too big to return on integer > 0 - default to max_runs
@@ -158,7 +166,7 @@ def main():
             # NOTE - log total elapsed time to go run_count
             if time_logging:
                 total_time = timer.check()
-                logTime(time_logger, max_runs, total_time)
+                logTime(time_logger, max_runs, total_time, dud_runs)
 
             timer.stop()
 
@@ -171,8 +179,10 @@ def main():
             if ai_action not in legal_plays:
                 raise Exception ("AI making illegal move!")
 
-            print("AI's Final Move:", ai_action)
-            main_game_state = main_game_state.nextState(ai_action, True)
+            print("AI's Final Move:", ai_action, end="\n\n")
+            main_game_state = main_game_state.nextState(ai_action, True, True)
+
+            input("Enter any input to continue:\n")
 
             # NOTE - turning off state and action log whilst taking timing results
             if action_state_logging:
@@ -191,6 +201,9 @@ def main():
 
             # redundant conditions but kept for readability
             elif state != Result.ALIVE and state != Result.BOSS_DEFEATED:
+                if state == Result.WIN:
+                    boss_defeated += 1
+
                 game_over = True
 
     winner = main_game_state.winner()
@@ -301,20 +314,25 @@ def initialiseStateLogger():
 
     return logger
 
-def initialiseTimeLogger():
+def initialiseTimeLogger(name=None):
     now = datetime.datetime.now()
-    now_str = now.strftime("%d%m%y%H%M%S")
-    filename = "Logs/Time/" + now_str + ".log"
+
+    if not name:
+        now_str = now.strftime("%d%m%y%H%M%S")
+        filename = "Logs/Time/Testing/" + now_str + ".log"
+
+    else:
+        filename = "Logs/Time/Testing/" + str(name) + ".log"
 
     # Create a logger specifically for states
     logger = logging.getLogger("Time")
-    file_handler = logging.FileHandler(filename, mode="w", encoding='utf-8')
+    file_handler = logging.FileHandler(filename, mode="a", encoding='utf-8')
     formatter = logging.Formatter('%(asctime)s - %(message)s')
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
     logger.setLevel(logging.DEBUG)
 
-    logger.info("I log time taken for AI to run max_count! :D")
+    #logger.info("I log time taken for AI to run max_count! :D")
 
     return logger
 
@@ -323,10 +341,10 @@ def initialiseResultLogger(name=None):
 
     if not name:
         now_str = now.strftime("%d%m%y%H%M%S")
-        filename = "Logs/Results/" + now_str + ".log"
+        filename = "Logs/Results/Testing/Blind" + now_str + ".log"
 
     else:
-        filename = "Logs/Results/" + str(name) + ".log"
+        filename = "Logs/Results/Testing/Blind/" + str(name) + ".log"
 
     # Create a logger specifically for states
     logger = logging.getLogger("Time")
@@ -363,8 +381,8 @@ def logState(logger, state):
 
     logger.info("STATE LOG: END")
 
-def logTime(logger, max_count, time):
-    logger.info("Max Count: {} | Time(s): {}".format(max_count, time))
+def logTime(logger, max_count, time, dud_count):
+    logger.info("Max Count: {} | Time(s): {} | Dud_Count: {}".format(max_count, time, dud_count))
 
 def logResults(logger, state, root_node, max_runs, max_time,boss_defeated, turns_survived):
     logger.info("Max Runs: {} | Max Time: {} | Players {}".format(max_runs, max_time, len(state.players)))
