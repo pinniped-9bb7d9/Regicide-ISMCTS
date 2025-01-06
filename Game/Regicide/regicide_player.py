@@ -8,14 +8,17 @@ from Game.Base.player import Player
 class RegicidePlayer(Player):
     def __init__(self, name):
         super().__init__(name)
+        # NOTE - recently played cards are stored in a temporary list before being added to the discard pile all at once when a boss is defeated
         self.played = []
 
-    def calculateHealth(self) -> int:
+    # takes players and returns an integer of their total 'health' based of the sum of the ranks of cards in their hand
+    def calculateHealth(self):
         health = 0
         for card in self.hand:
             health += card.rank
         return health
 
+    # checks to see if card to be played is in the player's hand
     def setCardToPlayed(self, card):
         if card not in self.hand:
             raise Exception("Card to be played is not in " + self.name + "'s hand!")
@@ -23,7 +26,8 @@ class RegicidePlayer(Player):
         self.hand.remove(card)
         self.played.append(card)
 
-    def takeDamage(self, damage, ai=False): # Return either a false boolean value or list of cards used to defend player
+    # takes player state and total damage to be taken and returns either a false boolean value or list of cards used to defend player
+    def takeDamage(self, damage, ai=False):
         if damage < 0:
             raise Exception("Damage taken by player cannot be negative!")
 
@@ -98,6 +102,7 @@ class RegicidePlayer(Player):
             return discarded
 
 # input validation
+# NOTE - used for human player - not AI
 def validPlay(legal_plays):
     valid = False
     play_index = input("Which hand would you like to play (Enter index): ")

@@ -16,7 +16,6 @@ class Castle(Deck):
 
     def create(self):
         if len(self.cards) != 0:
-            # TODO - Allow the option to continue anyway
             raise Exception("Castle deck already contains cards!")
 
         kings = [Boss(rank, suit)

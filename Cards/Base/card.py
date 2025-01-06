@@ -19,7 +19,6 @@ class Card:
         except TypeError:
             pass
 
-        # TODO - input validation can only be done outside of '__init__()'
         if rank not in list(range(1, 13 + 1)):
             raise Exception("Invalid rank")
         if suit not in ["C", "D", "H", "S"]:
@@ -31,7 +30,6 @@ class Card:
         return "?A23456789TJQK"[self.rank] + self.suit
 
     def __eq__(self, other):
-        # TODO - AttributeError if last move available is None
         return self.rank == other.rank and self.suit == other.suit
 
     def __ne__(self, other):

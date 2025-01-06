@@ -35,9 +35,8 @@ class RegicideBoard(Board):
                 level=logging.INFO
             )
 
-    # def __repr__(self):
-    #     return str(len(self.players))
 
+    # initialise board
     def start(self):
         # TODO - input validation
         valid = False
@@ -73,6 +72,7 @@ class RegicideBoard(Board):
         if self.verbose:
             self.logBoard()
 
+    # takes current game state and uses its provided list of previous actions to determine next player
     def currentPlayer(self):
         # it's player 1's turn (index 0) when game first begins
         if len(self.actions) == 0:
@@ -88,7 +88,9 @@ class RegicideBoard(Board):
 
         return next_player
 
-    # NOTE - 'play' is currently optional for debugging
+    # takes the current game state and requested play and calculates the next game state
+    # NOTE - play and final parameters is optional for debugging
+    # NOTE - ai parameter is used to determine if takeDamage() is automatically handled
     def nextState(self, play=None, ai=False, final=False):
         # FIXME - This is the problem line of code...
         current_player = self.currentPlayer()
@@ -115,7 +117,7 @@ class RegicideBoard(Board):
             self.actions.append(action)
             return self
 
-        # Set cards to played first to check its a valid move before applying card effects
+        # Set cards to played first to check it's a valid move before applying card effects
         for card in play:
             self.players[current_player].setCardToPlayed(card)
 
@@ -153,13 +155,15 @@ class RegicideBoard(Board):
             if len(self.castle.cards) != 0:
                 self.castle.drawBoss()
         else:
+            # player uses cards to defend themselves
             discarded = self.players[current_player].takeDamage(self.castle.boss.attack, ai)
 
+            # takeDamage() returns None if player died
+            # second condition is a redundancy so the player isn't check to be dead if adventures have run
             if not discarded and self.castle.boss.attack != 0:
                 player_died = True
             else:
                 if len(discarded) != 0:
-                    # TEMP - print for testing
                     if not ai or final:
                         print("Discarded Defence:", discarded)
                     self.discard.addCards(deepcopy(discarded))
@@ -173,6 +177,8 @@ class RegicideBoard(Board):
 
         return self
 
+    # takes current game state and returns of legal moves available to the player
+    # NOTE - cards parameter is optional for debugging
     def legalPlays(self, cards=None):
         legal_plays = []
         cards.sort()
@@ -246,6 +252,8 @@ class RegicideBoard(Board):
 
         return legal_plays
 
+    # take the current game state and determine whether an end-state condition was met
+    # NOTE - Result.BOSS_DEFEATED has added later to implemented rewards based on defeating bosses
     def winner(self, last_action=None):
         # CONFIG - Boss Reward Check Parameter
         boss_condition = True
@@ -276,6 +284,8 @@ class RegicideBoard(Board):
 
         return result
 
+    # takes the current game state and cards being played and determines whether the heart and/or diamond suit powers activate
+    # NOTE - spade and clubs effects are written in the Boss class since they only apply to the current boss and not the current game state - this is a case of coupling that could be abstracted
     def cardEffect(self, cards, ai = False):
 
         try:
@@ -301,7 +311,8 @@ class RegicideBoard(Board):
         if diamond_check:
             self.applyDaimond(power, ai)
 
-    # NOTE - spade and clubs effects are written in the Boss class since they only apply to the current boss and not the current game state
+    # apply the heart suit power to the board based on the previously calculated 'power' (sum of rank) of played cards
+    # NOTE - heart suit power moves cards from the discard pile to the tavern deck
     def applyHeart(self, power, ai = False):
         if len(self.discard.cards) != 0:
             random.shuffle(self.discard.cards)
@@ -312,25 +323,25 @@ class RegicideBoard(Board):
                 drawn_cards.append(card)
                 counter += 1
 
-            # TEMP - print for testing
             if not ai:
                 print("Cards being moved from the discard to tavern deck:", drawn_cards)
             self.tavern.cards = drawn_cards + self.tavern.cards
 
+    # apply the heart suit power to the board based on the previously calculated 'power' (sum of rank) of played cards
+    # NOTE - diamond suit power draws cards one at a time from the tavern deck and adds them to player hands' in turns -
+    #  stops when all players have max hand size or number of drawn cards = power
     def applyDaimond(self, power, ai = False):
         current_player = self.currentPlayer()
         counter = 0
         full = set([])
         while counter < power and (len(self.tavern.cards) != 0 or len(self.tavern.boss) != 0) and len(full) < len(self.players):
             if len(self.players[current_player].hand) < self.hand_size:
-                # TEMP - print for testing
                 if not ai:
                     print(self.players[current_player].name + " is drawing a card from the Tavern!")
                 drawn_card = self.tavern.drawCard()
                 self.players[current_player].hand.append(drawn_card)
                 counter += 1
             else:
-                # TEMP - print for testing
                 if not ai:
                     print(self.players[current_player].name + " has a full hand!")
                 full.add(self.players[current_player])
@@ -379,7 +390,8 @@ class RegicideBoard(Board):
 
         if castle:
             random.shuffle(castle)
-            castle.sort(reverse=True)
+            # FIXME - this function is deterministic and does not return a different valid castle state each time it is ran
+            castle.sort(reverse=True) # order = S, H, D, C
             state.castle.cards = castle
 
         return state
@@ -397,6 +409,8 @@ class RegicideBoard(Board):
 
         print(string)
 
+    # NOTE - node function added to check if any players have diamonds in the current game state -
+    #  this is called from the node after determinization so the AI isn't cheating by 'seeing' hidden information
     def diamondCheck(self, hands=None):
         if not hands:
             hands = []
@@ -416,7 +430,7 @@ class RegicideBoard(Board):
             return True
 
 
-    # logging functions
+    # logging function - print board state to terminal if verbose is True
     def logBoard(self):
         # NOTE - show player's hands
         for player in self.players:
@@ -427,13 +441,14 @@ class RegicideBoard(Board):
         logging.info("Tavern=%s", self.tavern.cards)
         logging.info("Discard=%s", self.discard.cards)
 
+# Enum class to make it easier to handle game state
 class Result(Enum):
     ALIVE = 0
     WIN = 1
     LOSS = 2
     BOSS_DEFEATED = 3
 
-# utitily function
+# takes hand/play of and outputs sum of ranks - used to calculate play power for suit powers
 def sumOfRanks(cards):
     total = 0
     for card in cards:

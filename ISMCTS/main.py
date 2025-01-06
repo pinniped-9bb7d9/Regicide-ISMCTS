@@ -59,7 +59,7 @@ def main():
 
 
         # NOTE - Player is currently set to player 1 - all other players are set to an AI
-        if next_turn < 0: # Player's Turn
+        if next_turn == 0: # Player's Turn
             current_player = main_game_state.players[next_turn]
             print("")
             print(current_player.name + "'s Turn:")
